@@ -89,28 +89,3 @@ Once the containers are running, you can access the services and monitoring tool
 ### Project diagram
 
 ![c4 diagram](images/diagrams/bookstore.png)
-
----
-
-## Visualizing the metrics in Grafana and Jaeger
-
-### Logs, metrics and trances in Grafana.
-
-All dashboards imported in Grafana are from the https://grafana.com/grafana/dashboards/ site. 
-
-![grafana dashboards](images/grafana-dashboards.png)
-
-### Grafana Tempo
-
-![grafana tempo](images/grafana-tempo-1.png)
-![grafana tempo](images/grafana-tempo-2.png)
-
-### Grafana Loki
-
-![grafana loki](images/grafana-loki.png)
-
-## Jaeger 
-
-![jaeger](images/jaeger-1.png)
-![jaeger](images/jaeger-2.png)
-![jaeger](images/jaeger-3.png)
