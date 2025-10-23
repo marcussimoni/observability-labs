@@ -1,0 +1,6 @@
+services:
+  k6:
+    image: grafana/k6
+    volumes:
+      - ./configs/k6/bookstore-test.js:/bookstore-test.js
+    entrypoint: ["k6", "run", "--vus", "10", "--duration", "10m", "/bookstore-test.js"]

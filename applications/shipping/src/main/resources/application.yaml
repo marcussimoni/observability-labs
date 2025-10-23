@@ -1,0 +1,67 @@
+
+server:
+  port: 8084
+  servlet:
+    context-path: /
+  shutdown: graceful
+  graceful-shutdown:
+    timeout: 30s
+
+spring:
+  application:
+    name: shipping
+  data:
+    mongodb:
+      uri: mongodb://${MONGODB_USER:root}:${MONGODB_PASSWORD:root}@${MONGODB_HOST:localhost:27017}/shippingdb?authSource=admin
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    date-format: com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer
+
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
+
+applications:
+  user-management:
+    host: ${USER_MANAGEMENT_HOST:http://localhost:8082}
+  bookstore:
+    host: ${BOOKSTORE_HOST:http://localhost:8080}
+
+logging:
+  level:
+    org.springframework: INFO
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.springframework.data.redis: INFO
+    org.springframework.data.mongodb.core.MongoTemplate: DEBUG
+
+management:
+  info:
+    application:
+      name: shipping-service
+      description: Shipping Service
+    javaVersion: ${java.version}
+    javaVendor: ${java.vendor}
+    env:
+      enabled: true
+    build:
+      enabled: true
+    java:
+      enabled: true
+    os:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  tracing:
+    sampling:
+      probability: '0.5'
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html

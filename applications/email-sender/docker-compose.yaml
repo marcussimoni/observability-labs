@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:18
+    container_name: email-sender-postgresql-service
+    restart: always
+#    shm_size: 128mb
+    environment:
+      POSTGRES_DB: emailsenderdb
+      POSTGRES_USER: emailsenderuser
+      POSTGRES_PASSWORD: emailsenderpassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/18/docker
+    networks:
+      - infra_network
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    restart: always
+    container_name: mailhog
+    ports:
+      - 1025:1025
+      - 8025:8025
+    networks:
+      - infra_network
+
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - infra_network
+
+networks:
+  infra_network:
+    driver: bridge

@@ -1,0 +1,60 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+  prometheus:
+    config:
+      scrape_configs:
+        - job_name: 'rabbitmq'
+          scrape_interval: 15s
+          static_configs:
+            - targets: [ 'rabbitmq:15692' ]
+          metrics_path: '/metrics'
+
+exporters:
+  otlp/tempo:
+    endpoint: tempo:4317
+    tls:
+      insecure: true
+  otlp/jaeger:
+    endpoint: jaeger:4317
+    tls:
+      insecure: true    
+  otlphttp:
+    endpoint: http://loki:3100/otlp    
+    tls:
+      insecure: true
+  prometheus:
+    endpoint: "0.0.0.0:8889"
+    namespace: default
+  prometheusremotewrite:
+    endpoint: http://prometheus:9090/api/v1/write
+    tls:
+      insecure: true    
+  debug:
+    verbosity: detailed
+
+
+connectors:
+  spanmetrics:
+
+processors:
+  batch:
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [spanmetrics, otlp/tempo, otlp/jaeger]
+    metrics/spanmetrics:
+      receivers: [spanmetrics, prometheus]
+      processors: [batch]
+      exporters: [prometheus, prometheusremotewrite]
+    logs:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlphttp]

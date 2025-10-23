@@ -1,0 +1,366 @@
+services:
+  # Menu
+  nginx-server:
+    image: nginx:alpine
+    container_name: nginx-server
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ../applications/bookstore-app/:/usr/share/nginx/html/bookstore/:ro
+      - ../applications/dashboard-app/:/usr/share/nginx/html/dashboard/:ro
+      - ./configs/nginx/conf.d:/etc/nginx/conf.d:ro
+    networks:
+      - infra_network
+
+  # applications
+  bookstore-service:
+    image: bookstore-service:latest
+    container_name: bookstore-service
+    environment:
+      POSTGRES_DB: bookstoredb
+      POSTGRES_USER: bookstoreuser
+      POSTGRES_PASSWORD: bookstorepassword
+      POSTGRES_PORT: 5432
+      POSTGRES_HOST: postgres
+      RABBITMQ_HOST: rabbitmq
+      USER_MANAGEMENT_HOST: http://user-management-service:8082
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+      OTEL_SERVICE_NAME: bookstore-service
+      OTEL_INSTRUMENTATION_MICROMETER_ENABLED: true
+      OTEL_EXPORTER_TOLP_METRICS_ENABLED: true
+      OTEL_EXPORTER_TOLP_TRACES_ENABLED: true
+      OTEL_EXPORTER_TOLP_LOGGING_ENABLED: true      
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - infra_network
+    ports:
+      - "8080:8080"
+
+  email-sender-service:
+    image: email-sender-service:latest
+    container_name: email-sender-service
+    environment:
+      POSTGRES_DB: emailsenderdb
+      POSTGRES_USER: emailsenderuser
+      POSTGRES_PASSWORD: emailsenderpassword
+      POSTGRES_PORT: 5432
+      POSTGRES_HOST: postgres
+      MAILHOG_HOST: mailhog
+      RABBITMQ_HOST: rabbitmq
+      USER_MANAGEMENT_HOST: http://user-management-service:8082
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+      OTEL_SERVICE_NAME: email-sender-service
+      OTEL_INSTRUMENTATION_MICROMETER_ENABLED: true
+      OTEL_EXPORTER_TOLP_METRICS_ENABLED: true
+      OTEL_EXPORTER_TOLP_TRACES_ENABLED: true
+      OTEL_EXPORTER_TOLP_LOGGING_ENABLED: true
+    depends_on:
+      postgres:
+        condition: service_healthy  
+    networks:
+      - infra_network
+    ports:
+      - "8081:8081"
+
+  user-management-service:
+    image: user-management-service:latest
+    container_name: user-management-service
+    environment:
+      POSTGRES_DB: usermanagementdb
+      POSTGRES_USER: usermanagementuser
+      POSTGRES_PASSWORD: usermanagementpassword
+      POSTGRES_PORT: 5432
+      POSTGRES_HOST: postgres
+      REDIS_HOST: redis
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+      OTEL_SERVICE_NAME: user-management-service
+      OTEL_INSTRUMENTATION_MICROMETER_ENABLED: true
+      OTEL_EXPORTER_TOLP_METRICS_ENABLED: true
+      OTEL_EXPORTER_TOLP_TRACES_ENABLED: true
+      OTEL_EXPORTER_TOLP_LOGGING_ENABLED: true      
+    depends_on:
+      postgres:
+        condition: service_healthy  
+    networks:
+      - infra_network
+    ports:
+      - "8082:8082"
+
+  payments-service:
+    image: payments-service:latest
+    container_name: payments-service
+    environment:
+      POSTGRES_DB: paymentsdb
+      POSTGRES_USER: paymentsuser
+      POSTGRES_PASSWORD: paymentspassword
+      POSTGRES_PORT: 5432
+      POSTGRES_HOST: postgres
+      RABBITMQ_HOST: rabbitmq
+      PAYMENT_GATEWAY: http://mockoon:3001
+      USER_MANAGEMENT_HOST: http://user-management-service:8082
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+      OTEL_SERVICE_NAME: payments-service
+      OTEL_INSTRUMENTATION_MICROMETER_ENABLED: true
+      OTEL_EXPORTER_TOLP_METRICS_ENABLED: true
+      OTEL_EXPORTER_TOLP_TRACES_ENABLED: true
+      OTEL_EXPORTER_TOLP_LOGGING_ENABLED: true      
+    depends_on:
+      postgres:
+        condition: service_healthy  
+    networks:
+      - infra_network
+    ports:
+      - "8083:8083"
+
+  shipping-service:
+    image: shipping-service:latest
+    container_name: shipping-service
+    environment:
+      MONGODB_USER: root
+      MONGODB_PASSWORD: root
+      MONGODB_HOST: mongodb
+      RABBITMQ_HOST: rabbitmq
+      USER_MANAGEMENT_HOST: http://user-management-service:8082
+      BOOKSTORE_HOST: http://bookstore-service:8080
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+      OTEL_SERVICE_NAME: shipping-service
+      OTEL_INSTRUMENTATION_MICROMETER_ENABLED: true
+      OTEL_EXPORTER_TOLP_METRICS_ENABLED: true
+      OTEL_EXPORTER_TOLP_TRACES_ENABLED: true
+      OTEL_EXPORTER_TOLP_LOGGING_ENABLED: true      
+    depends_on:
+      postgres:
+        condition: service_healthy  
+    networks:
+      - infra_network
+    ports:
+      - "8084:8084"
+
+  #applications    
+
+  # Observability
+
+  # Grafana stack
+
+  grafana:
+    # image: grafana/grafana:11.0.0
+    image: grafana/grafana:12.3.0-18481575143-ubuntu
+    container_name: grafana
+    volumes:
+      - ./configs/grafana/datasources:/etc/grafana/provisioning/datasources
+      - ./configs/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./data/grafana:/var/lib/grafana
+    environment:
+      - GF_INSTALL_PLUGINS=redis-datasource
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+      - GF_FEATURE_TOGGLES_ENABLE=traceqlEditor
+    ports:
+      - "3000:3000"
+    networks:
+      - infra_network  
+
+  tempo:
+    image: grafana/tempo:main-a953921
+    container_name: grafana-tempo
+    command: [ "-config.file=/etc/tempo.yaml" ]
+    volumes:
+      - ./configs/grafana/tempo/tempo.yaml:/etc/tempo.yaml
+      - ./data/grafana/tempo:/var/tempo
+    ports:
+      - "3200"
+      - "4317"
+    networks:
+      - infra_network
+
+  loki:
+    image: grafana/loki:3.5
+    container_name: grafana-loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - infra_network      
+
+  # Grafana stack
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.137.0
+    container_name: otel-collector
+    command: [ "--config=/etc/otel-collector.yaml" ]
+    volumes:
+      - ./configs/otel/otel-collector-config.yml:/etc/otel-collector.yaml
+    ports:
+      - "8889:8889"
+    networks:
+      infra_network:
+        aliases: [spm_metrics_source]
+
+  prometheus:
+    image: prom/prometheus:v3.7.0
+    container_name: prometheus
+    command:
+      - --config.file=/etc/prometheus.yaml
+      - --web.enable-remote-write-receiver
+      - --enable-feature=exemplar-storage
+      - --enable-feature=native-histograms
+      - --web.enable-otlp-receiver
+    volumes:
+      - ./configs/prometheus/prometheus.yaml:/etc/prometheus.yaml
+      - ./data/prometheus:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - infra_network  
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.74.0
+    container_name: jaeger
+    volumes:
+      - "./configs/jaeger/jaeger-ui.json:/etc/jaeger/jaeger-ui.json"
+    command: --query.ui-config /etc/jaeger/jaeger-ui.json
+    environment:
+      - METRICS_STORAGE_TYPE=prometheus
+      - PROMETHEUS_SERVER_URL=http://prometheus:9090
+      - PROMETHEUS_QUERY_NAMESPACE=${PROMETHEUS_QUERY_NAMESPACE:-}
+      - PROMETHEUS_QUERY_DURATION_UNIT=${PROMETHEUS_QUERY_DURATION_UNIT:-}
+      - PROMETHEUS_QUERY_NORMALIZE_CALLS=true
+      - PROMETHEUS_QUERY_NORMALIZE_DURATION=true
+    ports:
+      - "16686:16686" # Jaeger UI
+    networks:
+      - infra_network  
+
+  # DATABASES
+  postgres:
+    image: postgres:18
+    container_name: postgresql-service
+    restart: always
+    environment:
+      POSTGRES_DB: master
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/18/docker
+      - ./configs/postgres/db-init-scripts:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -h localhost -p 5432"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 10s  
+    networks:
+      - infra_network
+
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:latest
+    container_name: postgres-exporter
+    environment:
+      DATA_SOURCE_URI: "postgres:5432/master?sslmode=disable"
+      DATA_SOURCE_USER: postgres
+      DATA_SOURCE_PASS: postgres
+    depends_on:
+      postgres:
+        condition: service_healthy  
+    ports:
+      - "9187:9187"
+    networks:
+      - infra_network
+      
+  redis:
+    image: redis:alpine3.22
+    container_name: redis
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - ./data/redis:/data
+    restart: always
+    networks:
+      - infra_network
+
+  mongodb:
+    # image: mongo:8.0.15
+    image: mongodb/mongodb-community-server:latest
+    container_name: mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    volumes:
+      - ./data/mongodb:/data/db
+    networks:
+      - infra_network
+
+  mongodb-exporter:
+    # image: percona/mongodb_exporter:0.47.1
+    image: percona/mongodb_exporter:0.47.1
+    container_name: mongodb-exporter
+    command: '--mongodb.collstats-colls=shippingdb.shipping --compatible-mode --collect-all'
+    environment:
+      MONGODB_USER: root
+      MONGODB_PASSWORD: root
+      MONGODB_URI: mongodb://root:root@mongodb
+    ports:
+      - "9216:9216"
+    networks:
+    - infra_network
+  
+  # DATABASES
+
+  # utilities
+  mailhog:
+    image: mailhog/mailhog:latest
+    restart: always
+    container_name: mailhog
+    entrypoint: ["/bin/sh", "-c", "MailHog &>/dev/null"]
+    ports:
+      - 1025:1025
+      - 8025:8025
+    networks:
+      - infra_network
+
+  mockoon:
+    image: 'mockoon/cli:latest'
+    container_name: mockoon
+    command: '--data data --port 3001'
+    volumes:
+      - type: bind
+        source: ./configs/mockoon/data.yaml
+        target: /data
+    ports:
+      - '3001:3001'
+    networks:
+      - infra_network    
+  # utilities
+
+  # Messaging 
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+      - "15692:15692"
+    networks:
+      - infra_network  
+
+networks:
+  infra_network:
+    driver: bridge
