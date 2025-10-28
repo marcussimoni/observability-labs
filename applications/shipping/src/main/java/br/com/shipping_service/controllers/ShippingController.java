@@ -48,9 +48,9 @@ public class ShippingController {
     public Shipping getById(
             @Parameter(
                     description = "Internal ID of the shipping record",
-                    example = "670f531de2b4b627d3a4b9c1"
+                    example = "1"
             )
-            @PathVariable String id
+            @PathVariable Long id
     ) {
         return shippingService.findById(id);
     }

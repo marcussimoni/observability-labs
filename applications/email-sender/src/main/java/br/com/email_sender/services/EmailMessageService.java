@@ -1,6 +1,5 @@
 package br.com.email_sender.services;
 
-import br.com.email_sender.controllers.EmailListener;
 import br.com.email_sender.dtos.EmailMessageRequest;
 import br.com.email_sender.dtos.UserResponseDTO;
 import br.com.email_sender.entities.EmailMessage;

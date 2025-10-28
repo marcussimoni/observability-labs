@@ -1,35 +1,31 @@
 package br.com.email_sender.entities;
 
-import jakarta.persistence.*;
 
-@Entity
-@Table(name = "tb_email_message")
+import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+
+@Document(collection = "email_message")
 public class EmailMessage {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private ObjectId id;
 
-    @Column(name = "email", nullable = false)
+    @Field(name = "email")
     private String email;
 
-    @Column(name = "user_name", nullable = false)
+    @Field(name = "user_name")
     private String userName;
 
-    @Column
     private String book;
 
-    @Column
     private String shippingId;
 
-    @Column
     private String city;
 
-    @Column
     private String state;
 
-    @Column
-    @Enumerated(EnumType.STRING)
     private EmailTemplate template;
 
     private String status;
@@ -50,12 +46,8 @@ public class EmailMessage {
         this.status = "WAITING_PAYMENT";
     }
 
-    public Long getId() {
+    public ObjectId getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getEmail() {

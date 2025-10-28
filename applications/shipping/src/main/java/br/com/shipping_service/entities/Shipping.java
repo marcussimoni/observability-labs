@@ -1,38 +1,32 @@
 package br.com.shipping_service.entities;
 
 
-import org.bson.types.ObjectId;
+import jakarta.persistence.*;
 import org.springframework.data.annotation.Transient;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
-import org.springframework.data.mongodb.core.mapping.MongoId;
 
 import java.time.LocalDateTime;
 
-@Document(collection = "shipping")
+@Entity
+@Table(name = "tb_shipping")
 public class Shipping {
 
-    @MongoId
-    @Field(name = "_id")
-    private ObjectId _id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Field("state")
     private String state;
 
-    @Field("city")
     private String city;
 
-    @Field("book")
     private String book;
 
-    @Field("sentAt")
+    @Column(name = "sent_at")
     private LocalDateTime sentAt;
 
-//    @Field("status")
     @Transient
     private ShippingStatus status;
 
-    @Field("publicIdentifier")
+    @Column(name = "public_identifier")
     private String publicIdentifier;
 
     public Shipping() {
@@ -80,7 +74,7 @@ public class Shipping {
         this.publicIdentifier = publicIdentifier;
     }
 
-    public ObjectId getId() {
-        return _id;
+    public Long getId() {
+        return id;
     }
 }

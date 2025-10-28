@@ -7,12 +7,10 @@ import br.com.shipping_service.dtos.UserResponseDTO;
 import br.com.shipping_service.entities.EmailTemplate;
 import br.com.shipping_service.entities.Shipping;
 import br.com.shipping_service.repositories.ShippingRepository;
-import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class ShippingService {
@@ -49,9 +47,9 @@ public class ShippingService {
 
     }
 
-    public Shipping findById(String id) {
+    public Shipping findById(Long id) {
         return repository
-                .findById(new ObjectId(id))
+                .findById(id)
                 .orElseThrow(() -> new RuntimeException("Shipping not found"));
     }
 

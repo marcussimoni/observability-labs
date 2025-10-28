@@ -1,21 +1,17 @@
 version: '3.8'
 
 services:
-  postgres:
-    image: postgres:18
-    container_name: email-sender-postgresql-service
+  mongodb:
+    image: mongo:6.0
+    container_name: mongodb
     restart: always
-#    shm_size: 128mb
-    environment:
-      POSTGRES_DB: emailsenderdb
-      POSTGRES_USER: emailsenderuser
-      POSTGRES_PASSWORD: emailsenderpassword
     ports:
-      - "5432:5432"
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
     volumes:
-      - ./data/postgres:/var/lib/postgresql/18/docker
-    networks:
-      - infra_network
+      - ./data/mongodb:/data/db
 
   mailhog:
     image: mailhog/mailhog:latest

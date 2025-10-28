@@ -10,9 +10,27 @@ server:
 spring:
   application:
     name: shipping
-  data:
-    mongodb:
-      uri: mongodb://${MONGODB_USER:root}:${MONGODB_PASSWORD:root}@${MONGODB_HOST:localhost:27017}/shippingdb?authSource=admin
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:shippingdb}
+    username: ${POSTGRES_USER:shippinguser}
+    password: ${POSTGRES_PASSWORD:shippingpassword}
+    driver-class-name: org.postgresql.Driver
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      maximumPoolSize: 5
+      minimumIdle: 1
+      idleTimeout: 30000
+      maxLifetime: 1800000
+      connectionTimeout: 30000
+      pool-name: shipping-HikariCP
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        default_schema: shipping
+        dialect: org.hibernate.dialect.PostgreSQLDialect
   jackson:
     serialization:
       write-dates-as-timestamps: false

@@ -1,12 +1,11 @@
 package br.com.shipping_service.repositories;
 
 import br.com.shipping_service.entities.Shipping;
-import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface ShippingRepository extends MongoRepository<Shipping, ObjectId> {
+public interface ShippingRepository extends JpaRepository<Shipping, Long> {
 
     List<Shipping> findByPublicIdentifier(String publicIdentifier);
 

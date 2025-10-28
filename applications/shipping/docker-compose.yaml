@@ -1,15 +1,14 @@
 services:
-  mongodb:
-    image: mongo:6.0
-    container_name: mongodb
+  postgres:
+    image: postgres:18
+    container_name: email-sender-postgresql-service
     restart: always
-    ports:
-      - "27017:27017"
+    #    shm_size: 128mb
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: root
+      POSTGRES_DB: emailsenderdb
+      POSTGRES_USER: emailsenderuser
+      POSTGRES_PASSWORD: emailsenderpassword
+    ports:
+      - "5432:5432"
     volumes:
-      - ./data/mongodb:/data/db
-
-volumes:
-  mongo_data:
+      - ./data/postgres:/var/lib/postgresql/18/docker

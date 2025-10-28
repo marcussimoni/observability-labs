@@ -9,27 +9,9 @@ server:
 spring:
   application:
     name: email-sender
-  datasource:
-    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:emailsenderdb}
-    username: ${POSTGRES_USER:emailsenderuser}
-    password: ${POSTGRES_PASSWORD:emailsenderpassword}
-    driver-class-name: org.postgresql.Driver
-    type: com.zaxxer.hikari.HikariDataSource
-    hikari:
-      maximumPoolSize: 5
-      minimumIdle: 1
-      idleTimeout: 30000
-      maxLifetime: 1800000
-      connectionTimeout: 30000
-      pool-name: email-sender-HikariCP
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    properties:
-      hibernate:
-        default_schema: emailsender
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+  data:
+    mongodb:
+      uri: mongodb://${MONGODB_USER:root}:${MONGODB_PASSWORD:root}@${MONGODB_HOST:localhost:27017}/shippingdb?authSource=admin
   mail:
     host: ${MAILHOG_HOST:localhost}
     port: 1025
@@ -55,8 +37,6 @@ spring:
 logging:
   level:
     org.springframework: INFO
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
 
 applications:
   user-management:

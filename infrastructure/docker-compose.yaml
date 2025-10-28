@@ -44,11 +44,9 @@ services:
     image: email-sender-service:latest
     container_name: email-sender-service
     environment:
-      POSTGRES_DB: emailsenderdb
-      POSTGRES_USER: emailsenderuser
-      POSTGRES_PASSWORD: emailsenderpassword
-      POSTGRES_PORT: 5432
-      POSTGRES_HOST: postgres
+      MONGODB_USER: root
+      MONGODB_PASSWORD: root
+      MONGODB_HOST: mongodb
       MAILHOG_HOST: mailhog
       RABBITMQ_HOST: rabbitmq
       USER_MANAGEMENT_HOST: http://user-management-service:8082
@@ -123,9 +121,11 @@ services:
     image: shipping-service:latest
     container_name: shipping-service
     environment:
-      MONGODB_USER: root
-      MONGODB_PASSWORD: root
-      MONGODB_HOST: mongodb
+      POSTGRES_DB: shippingdb
+      POSTGRES_USER: shippinguser
+      POSTGRES_PASSWORD: shippingpassword
+      POSTGRES_PORT: 5432
+      POSTGRES_HOST: postgres    
       RABBITMQ_HOST: rabbitmq
       USER_MANAGEMENT_HOST: http://user-management-service:8082
       BOOKSTORE_HOST: http://bookstore-service:8080
