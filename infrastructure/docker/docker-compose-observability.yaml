@@ -1,0 +1,90 @@
+services:
+  grafana:
+    image: grafana/grafana:12.3.0-18481575143-ubuntu
+    container_name: grafana
+    volumes:
+      - ../configs/grafana/datasources:/etc/grafana/provisioning/datasources
+      - ../configs/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ../data/grafana:/var/lib/grafana
+    environment:
+      - GF_INSTALL_PLUGINS=redis-datasource
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+      - GF_FEATURE_TOGGLES_ENABLE=traceqlEditor
+    ports:
+      - "3000:3000"
+    networks:
+      - infra_network  
+
+  tempo:
+    image: grafana/tempo:main-a953921
+    container_name: grafana-tempo
+    command: [ "-config.file=/etc/tempo.yaml" ]
+    volumes:
+      - ../configs/grafana/tempo/tempo.yaml:/etc/tempo.yaml
+      - ../data/grafana/tempo:/var/tempo
+    ports:
+      - "3200"
+      - "4317"
+    networks:
+      - infra_network
+
+  loki:
+    image: grafana/loki:3.5
+    container_name: grafana-loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - infra_network      
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.137.0
+    container_name: otel-collector
+    command: [ "--config=/etc/otel-collector.yaml" ]
+    volumes:
+      - ../configs/otel/otel-collector-config.yml:/etc/otel-collector.yaml
+    ports:
+      - "8889:8889"
+    networks:
+      infra_network:
+        aliases: [spm_metrics_source]
+
+  prometheus:
+    image: prom/prometheus:v3.7.0
+    container_name: prometheus
+    command:
+      - --config.file=/etc/prometheus.yaml
+      - --web.enable-remote-write-receiver
+      - --enable-feature=exemplar-storage
+      - --enable-feature=native-histograms
+      - --web.enable-otlp-receiver
+    volumes:
+      - ../configs/prometheus/prometheus.yaml:/etc/prometheus.yaml
+      - ../data/prometheus:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - infra_network  
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.74.0
+    container_name: jaeger
+    volumes:
+      - "../configs/jaeger/jaeger-ui.json:/etc/jaeger/jaeger-ui.json"
+    command: --query.ui-config /etc/jaeger/jaeger-ui.json
+    environment:
+      - METRICS_STORAGE_TYPE=prometheus
+      - PROMETHEUS_SERVER_URL=http://prometheus:9090
+      - PROMETHEUS_QUERY_NAMESPACE=${PROMETHEUS_QUERY_NAMESPACE:-}
+      - PROMETHEUS_QUERY_DURATION_UNIT=${PROMETHEUS_QUERY_DURATION_UNIT:-}
+      - PROMETHEUS_QUERY_NORMALIZE_CALLS=true
+      - PROMETHEUS_QUERY_NORMALIZE_DURATION=true
+    ports:
+      - "16686:16686" # Jaeger UI
+    networks:
+      - infra_network
+
+networks:
+  infra_network:
+    external: true

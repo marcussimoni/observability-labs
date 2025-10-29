@@ -55,7 +55,7 @@ Before running the project, make sure you have installed:
 
 ## Running the Project
 
-All applications and infrastructure services are designed to run using Docker Compose. Inside ***infrastructure*** folder execute to build the Java applications and start all application using docker-compose:
+All applications and infrastructure services are designed to run using Docker Compose. You can find the docker-compose files in ***infrastructure/docker*** folder. Inside ***infrastructure/scripts*** folder execute to build the Java applications and start all application using docker-compose:
 
 ```bash
 sh start.up build
@@ -74,7 +74,7 @@ sh stop.sh
 
 ## Generating metrics
 
-After start the environment with ***docker-compose up*** or the ***start.sh*** you can run a k6 script to start to fill the metrics in the applications. This proccess take some minutes. The configurations to k6 are in ***docker-compose-test.yaml*** file. To run k6 execute the following command inside ***infrastructure*** folder.
+After start the environment with ***start.sh*** you can run a k6 script to start to fill the metrics in the applications. This proccess take some minutes. The configurations to k6 are in ***docker-compose-test.yaml*** file. To run k6 execute the following command inside ***infrastructure/docker*** folder.
 
 ```bash
 docker-compose -f docker-compose-test.yaml up

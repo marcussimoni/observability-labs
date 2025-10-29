@@ -1,0 +1,83 @@
+services:
+  postgres:
+    image: postgres:18
+    container_name: postgresql-service
+    restart: always
+    environment:
+      POSTGRES_DB: master
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - ../data/postgres:/var/lib/postgresql/18/docker
+      - ../configs/postgres/db-init-scripts:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -h localhost -p 5432"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 10s  
+    networks:
+      - infra_network
+
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:latest
+    container_name: postgres-exporter
+    environment:
+      DATA_SOURCE_URI: "postgres:5432/master?sslmode=disable"
+      DATA_SOURCE_USER: postgres
+      DATA_SOURCE_PASS: postgres
+    depends_on:
+      postgres:
+        condition: service_healthy  
+    ports:
+      - "9187:9187"
+    networks:
+      - infra_network
+      
+  redis:
+    image: redis:alpine3.22
+    container_name: redis
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - ../data/redis:/data
+    restart: always
+    networks:
+      - infra_network
+
+  mongodb:
+    # image: mongo:8.0.15
+    image: mongodb/mongodb-community-server:latest
+    container_name: mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    volumes:
+      - ../data/mongodb:/data/db
+    networks:
+      - infra_network
+
+  mongodb-exporter:
+    # image: percona/mongodb_exporter:0.47.1
+    image: percona/mongodb_exporter:0.47.1
+    container_name: mongodb-exporter
+    command: '--mongodb.collstats-colls=shippingdb.shipping --compatible-mode --collect-all'
+    environment:
+      MONGODB_USER: root
+      MONGODB_PASSWORD: root
+      MONGODB_URI: mongodb://root:root@mongodb
+    ports:
+      - "9216:9216"
+    networks:
+    - infra_network
+
+
+networks:
+  infra_network:
+    external: true
