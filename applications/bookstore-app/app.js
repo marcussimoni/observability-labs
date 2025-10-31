@@ -1,9 +1,9 @@
 // API Endpoints
-const API_BASE_URL = 'http://localhost:8080';
+const API_BASE_URL = 'http://localhost/bookstore-service';
 const API_ENDPOINTS = {
     BOOKS: `${API_BASE_URL}/books`,
     PURCHASES: `${API_BASE_URL}/purchases`,
-    AUTHENTICATED_USER: 'http://localhost:8082/users/me'
+    AUTHENTICATED_USER: 'http://localhost/user-management-service/users/me'
 };
 
 // DOM Elements

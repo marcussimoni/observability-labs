@@ -2,7 +2,7 @@
 server:
   port: 8083
   servlet:
-    context-path: /
+    context-path: /payments-service
   shutdown: graceful
   graceful-shutdown:
     timeout: 30s

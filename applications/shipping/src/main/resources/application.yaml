@@ -2,7 +2,7 @@
 server:
   port: 8084
   servlet:
-    context-path: /
+    context-path: /shipping-service
   shutdown: graceful
   graceful-shutdown:
     timeout: 30s

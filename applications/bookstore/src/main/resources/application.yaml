@@ -1,7 +1,7 @@
 server:
   port: 8080
   servlet:
-    context-path: /
+    context-path: /bookstore-service
   shutdown: graceful
   graceful-shutdown:
     timeout: 30s
@@ -89,3 +89,6 @@ management:
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
+  # api-docs:
+  #   path: /bookstore-service/v3/api-docs
+  # use-root-path: false  

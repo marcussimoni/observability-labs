@@ -2,7 +2,7 @@
 server:
   port: 8082
   servlet:
-    context-path: /
+    context-path: /user-management-service
   shutdown: graceful  # habilita shutdown gracioso
   graceful-shutdown:
     timeout: 30s
