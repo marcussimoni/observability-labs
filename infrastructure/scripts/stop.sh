@@ -1,6 +1,6 @@
 #!/bin/bash
 
-dockerComposes=("docker-compose-apps" "docker-compose-opensearch" "docker-compose-dbs" "docker-compose-messages" "docker-compose-utilities" "docker-compose-observability")
+dockerComposes=("docker-compose-apps" "docker-compose-dbs" "docker-compose-messages" "docker-compose-utilities" "docker-compose-observability" "docker-compose-nginx")
 
 for dockerCompose in "${dockerComposes[@]}"; do
     

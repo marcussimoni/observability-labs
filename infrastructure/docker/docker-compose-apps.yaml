@@ -1,18 +1,4 @@
 services:
-# Menu
-  nginx-server:
-    image: nginx:alpine
-    container_name: nginx-server
-    restart: unless-stopped
-    ports:
-      - "80:80"
-    volumes:
-      - ../../applications/bookstore-app/:/usr/share/nginx/html/bookstore/:ro
-      - ../../applications/dashboard-app/:/usr/share/nginx/html/dashboard/:ro
-      - ../configs/nginx/conf.d:/etc/nginx/conf.d:ro
-    networks:
-      - infra_network
-
   # applications
   bookstore-service:
     image: bookstore-service:latest

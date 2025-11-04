@@ -25,11 +25,12 @@ header {
 }
 
 .section {
-    background: #fff;
+    background: #eee;
     border-radius: 10px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     padding: 1.5rem;
     transition: transform 0.2s ease;
+    border: 1px solid #ddd;
 }
 
 .section:hover {
@@ -79,6 +80,10 @@ footer {
 
 .unhealth {
     color: red;
+}
+
+.not-checked {
+    color: #EAAA00;
 }
 
 .left-space {
