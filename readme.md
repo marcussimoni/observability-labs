@@ -7,7 +7,6 @@ The environment is fully containerized with Docker Compose, and each microservic
 ## 🎯 Goals
 
 This lab serves as a foundation for exploring:
-	•	Microservices communication patterns (REST, messaging with RabbitMQ, etc.)
 	•	Distributed tracing and metrics correlation
 	•	Resilience, monitoring, and alerting
 	•	Software architecture approaches
@@ -15,6 +14,10 @@ This lab serves as a foundation for exploring:
 ## 🚀 Overview
 
 In short, this project provides a **hands-on learning platform** to explore how observability integrates with real-world microservice systems. It is **not a production-ready solution**; instead, it serves as a **base project** that can be used to study and experiment with topics relevant to environments similar to those found in a professional setting.
+
+## Microservices project
+
+The microservices project can be found at [https://github.com/marcussimoni/microservices-labs](https://github.com/marcussimoni/microservices-labs). It is not necessary download and run the microservices applications before, during the aplication start up the script will download, build and start it. More info at: ***Running the Project*** section.
 
 ### Project Structure
 
@@ -56,7 +59,7 @@ Before running the project, make sure you have installed:
 
 ## Running the Project
 
-All applications and infrastructure services are designed to run using Docker Compose. You can find the docker-compose files in ***infrastructure/docker*** folder. Inside ***infrastructure/scripts*** folder execute to build the Java applications and start all application using docker-compose:
+All applications and infrastructure services are designed to run using Docker Compose. You can find the docker-compose files in ***infrastructure/docker*** folder. Inside ***infrastructure/scripts*** folder execute to download and build the Java applications and start all observability tools using docker-compose:
 
 ```bash
 sh start.sh build
