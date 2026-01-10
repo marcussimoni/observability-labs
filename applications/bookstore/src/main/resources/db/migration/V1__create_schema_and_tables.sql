@@ -23,3 +23,6 @@ CREATE TABLE IF NOT EXISTS bookstore.purchases (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (book_id) REFERENCES bookstore.books(id) ON DELETE CASCADE
 );
+
+-- used by debezium for replication
+ CREATE PUBLICATION dbz_publication FOR TABLE bookstore.purchases;

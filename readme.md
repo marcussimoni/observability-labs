@@ -23,6 +23,7 @@ root
 ├── applications
 │   ├── Frontend
 │       ├── Bookstore app        # site for bookstore
+│       ├── Healthcheck app      # healthcheck for infrastructure and applications
 │       └── Dashboard app        # site with all links to applications configured in this docker-compose file.
 │   ├── Backends
 │       ├── bookstore            # Spring Boot application for bookstore api
@@ -31,18 +32,18 @@ root
 │       ├── shipping             # Spring Boot application for managing shippings
 │       └── user-management      # Spring Boot application for user management
 └── infrastructure
-├── postgresql           # PostgreSQL 18 database
-├── mongodb              # mongodb database
-├── Redis                # Redis database
-├── Rabbitmq             # RabbitMQ message broker
-├── Mailhog              # Mail testing tool
-├── Mockoon              # Fake api to mock request
-├── Grafana              # Grafana dashboards and configuration
-│   ├── Loki             # Grafana Loki for log aggregator
-│   └── Tempo            # Grafana Tempo for tracings
-├── Prometheus           # Prometheus monitoring server
-├── Jaeger               # Jaeger distributed tracing
-└── Otel-Collector       # OpenTelemetry collector
+	├── postgresql           # PostgreSQL 18 database
+	├── mongodb              # mongodb database
+	├── Redis                # Redis database
+	├── Rabbitmq             # RabbitMQ message broker
+	├── Mailhog              # Mail testing tool
+	├── Mockoon              # Fake api to mock request
+	├── Grafana              # Grafana dashboards and configuration
+	│   ├── Loki             # Grafana Loki for log aggregator
+	│   └── Tempo            # Grafana Tempo for tracings
+	├── Prometheus           # Prometheus monitoring server
+	├── Jaeger               # Jaeger distributed tracing
+	└── Otel-Collector       # OpenTelemetry collector
 ```
 
 ## Pre-requisites
@@ -58,13 +59,13 @@ Before running the project, make sure you have installed:
 All applications and infrastructure services are designed to run using Docker Compose. You can find the docker-compose files in ***infrastructure/docker*** folder. Inside ***infrastructure/scripts*** folder execute to build the Java applications and start all application using docker-compose:
 
 ```bash
-sh start.up build
+sh start.sh build
 ```
 
 The build attribute is necessary to build the microservices applications. After the images were built execute:
 
 ```bash
-sh start.up
+sh start.sh
 ```
 
 To stop all applications execute the following script:

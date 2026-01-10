@@ -13,6 +13,14 @@ services:
       - ../data/nginx:/var/log/nginx
     networks:
       - infra_network
+  
+  healthcheck-app:
+    image: healthcheck-app-service:latest
+    container_name: healthcheck-app
+    volumes:
+      - ../configs/nginx/healthcheck/applications.json:/app/config/applications.json
+    networks:
+      - infra_network
 
 networks:
   infra_network:

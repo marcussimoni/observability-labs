@@ -13,7 +13,7 @@ network="infra_network"
 echo "CREATING $network DOCKER NETWORK"
 docker network create $network
 
-dockerComposes=("docker-compose-nginx" "docker-compose-opensearch" "docker-compose-dbs" "docker-compose-messages" "docker-compose-utilities" "docker-compose-observability" "docker-compose-apps")
+dockerComposes=("docker-compose-nginx" "docker-compose-dbs" "docker-compose-messages" "docker-compose-utilities" "docker-compose-observability" "docker-compose-apps")
 
 for dockerCompose in "${dockerComposes[@]}"; do
     
@@ -21,7 +21,9 @@ for dockerCompose in "${dockerComposes[@]}"; do
     
 done
 
-DASHBOARD_URL="http://localhost"
+curl -X POST  -H  "Content-Type:application/json" http://localhost:9094/connectors -d @../configs/kafka/connectors/bookstore-connector.json
+
+DASHBOARD_URL="http://localhost/dashboard"
 
 # For Linux
 if command -v xdg-open &> /dev/null; then

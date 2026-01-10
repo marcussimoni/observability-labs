@@ -1,6 +1,6 @@
 #!/bin/bash
 
-projects=("payments" "email-sender" "user-management" "bookstore" "shipping")
+projects=("payments" "email-sender" "user-management" "bookstore" "shipping" "healthcheck-app")
 
 baseFolder="../../applications"
 
