@@ -2,7 +2,7 @@ services:
   nginx-server:
     image: nginx:alpine
     container_name: nginx-server
-    restart: unless-stopped
+    restart: always
     ports:
       - "80:80"
     volumes:
@@ -13,7 +13,7 @@ services:
       - ../data/nginx:/var/log/nginx
     networks:
       - infra_network
-  
+
   healthcheck-app:
     image: healthcheck-app-service:latest
     container_name: healthcheck-app

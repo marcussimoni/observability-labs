@@ -13,15 +13,13 @@ network="infra_network"
 echo "CREATING $network DOCKER NETWORK"
 docker network create $network
 
-dockerComposes=("docker-compose-dbs" "docker-compose-messages" "docker-compose-apps" "docker-compose-utilities" "docker-compose-observability" "docker-compose-nginx")
+dockerComposes=("docker-compose-dbs" "docker-compose-dbs-exporter" "docker-compose-rabbitmq" "docker-compose-kafka" "docker-compose-utilities" "docker-compose-apps" "docker-compose-nginx" "docker-compose-observability")
 
 for dockerCompose in "${dockerComposes[@]}"; do
     
     docker-compose -f "../docker/$dockerCompose.yaml" up -d 
     
 done
-
-curl -X POST  -H  "Content-Type:application/json" http://localhost:9094/connectors -d @../configs/kafka/connectors/bookstore-connector.json
 
 DASHBOARD_URL="http://localhost/dashboard"
 

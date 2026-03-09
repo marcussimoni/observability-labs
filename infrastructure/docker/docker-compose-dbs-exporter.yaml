@@ -1,0 +1,29 @@
+services:
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:latest
+    container_name: postgres-exporter
+    environment:
+      DATA_SOURCE_URI: "postgres:5432/master?sslmode=disable"
+      DATA_SOURCE_USER: postgres
+      DATA_SOURCE_PASS: postgres
+    ports:
+      - "9187:9187"
+    networks:
+      - infra_network
+  mongodb-exporter:
+    # image: percona/mongodb_exporter:0.47.1
+    image: percona/mongodb_exporter:0.47.1
+    container_name: mongodb-exporter
+    command: '--mongodb.collstats-colls=shippingdb.shipping --compatible-mode --collect-all'
+    environment:
+      MONGODB_USER: root
+      MONGODB_PASSWORD: root
+      MONGODB_URI: mongodb://root:root@mongodb
+    ports:
+      - "9216:9216"
+    networks:
+      - infra_network
+
+networks:
+  infra_network:
+    external: true
